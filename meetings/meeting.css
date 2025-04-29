@@ -28,11 +28,11 @@ h1{
     gap: 2rem;
 }
 
-#employees-wrapper div{
-    max-width: 75%;
+#employees-wrapper #employee{
+    min-width: 65%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 2rem;
     background-color: #CC2B52;
     font-size: 24px;
@@ -40,8 +40,24 @@ h1{
     border-radius: 20px;
 }
 
+#data-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+    width: 70%;
+}
+
+#data-wrapper p{
+    width: 180px;
+}
+
+
+
 #employees-wrapper button{
     background-color: transparent;
+    width: 30px;
 }
 
 button{
@@ -52,4 +68,9 @@ button{
     border-radius: 20px;
     cursor: pointer;
     border: none;
+}
+
+textarea{
+    resize: none;
+    font-size: 16px;
 }

@@ -29,13 +29,17 @@ body{
     align-items: center;
     justify-content: center;
     gap: 2rem;
-    background-color: #DE7C7D;
-    border: none;
-    cursor: pointer;  
-    border-radius: 10px;  
+
 }
 
 .dashboard-wrapper a{
+    background-color: #DE7C7D;
+    border: none;
+    cursor: pointer;  
+    border-radius: 10px;
     text-decoration: none;
     color: black;
+    padding: 2rem;
+    width: 100%;
+    text-align: center;
 }

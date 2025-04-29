@@ -26,29 +26,33 @@ async function renderData()
     
 }
 
+const employeeList = [];
+
 function populateList(data) {
     const employeesList = document.getElementById("employees-wrapper");
     employeesList.innerHTML = ""; 
 
     data.forEach(e => {
         const employee = document.createElement("div");
-        const id = document.createElement("p");
-        const email = document.createElement("p");
+        const dataWrapper = document.createElement("div");
         const name = document.createElement("p");
         const play = document.createElement("button");
         const stop = document.createElement("button");
         const timer = document.createElement("p");
+        const textArea = document.createElement("textarea");
 
 
-        id.textContent = `ID: ${e.id}`;
-        email.textContent = `Email: ${e.email}`;
-        name.textContent = `Name: ${e.name}`;
+        employee.id = "employee"
+        dataWrapper.id = "data-wrapper";
+        name.textContent = e.name;
         play.id = "play-btn";
         play.textContent = "▶️";
         stop.id = "stop-btn";
         stop.textContent = "⏹️";
         timer.id = "timer";
         timer.textContent = "00:00";
+        textArea.id = "tArea";
+        textArea.value = "";
 
         play.addEventListener("click", () => {
             startTimer(timer);
@@ -58,13 +62,20 @@ function populateList(data) {
             endTimer(timer);
         })
 
-        employee.appendChild(id);
-        employee.appendChild(email);
-        employee.appendChild(name);
-        employee.appendChild(play);
-        employee.appendChild(stop);
-        employee.appendChild(timer);
+        dataWrapper.appendChild(name);
+        dataWrapper.appendChild(play);
+        dataWrapper.appendChild(stop);
+        dataWrapper.appendChild(timer);
+        employee.appendChild(dataWrapper);
+        employee.appendChild(textArea);
         employeesList.appendChild(employee);
+
+        employeeList.push({
+            devId: e.id,
+            durationMins: 0,
+            notes: ""
+        });
+
     });
 }
 
@@ -118,4 +129,54 @@ function endMeeting() {
     const totalFormatted = `${minutes}:${seconds}`;
 
     document.getElementById("meeting-timer").textContent = totalFormatted;
+
+    saveData();
+
+    window.location.href = "http://127.0.0.1:5500/dashboard/dashboard.html";
+
+}
+
+async function saveData() {
+    const url = 'https://standupparo-apis.vercel.app/api/stand-up'; // Replace with actual API URL
+    const apiKey = localStorage.getItem("key"); // Replace with your actual API key
+    let totalTime = 0;
+
+    const timerList = Array.from(document.querySelectorAll("#timer"));
+    for(let i = 0; i < timerList.length; i++) {        
+        splittedTimer = timerList[i].innerHTML.split(":");
+        let time = Number(splittedTimer[1]) + Number(splittedTimer[0]) * 60;
+        employeeList[i].durationMins = time;
+        totalTime+=time;
+    }
+
+    const textareaList = Array.from(document.querySelectorAll("#tArea"));
+    for(let i = 0; i < textareaList.length; i++) {
+        employeeList[i].notes = textareaList[i].value;
+    }
+
+    const payload = {
+        date: new Date(),
+        durationMins: totalTime,
+        standUpsInfo: employeeList
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Stand-up created:', data);
+    } catch (error) {
+        console.error('Error creating stand-up:', error.message);
+    }
 }
